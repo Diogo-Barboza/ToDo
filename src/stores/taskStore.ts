@@ -1,9 +1,9 @@
 import { create } from 'zustand'
 import { subscribeWithSelector } from 'zustand/middleware'
 import type { Task, TaskCreateInput, TaskUpdateInput, DayOfWeek } from '../types/task'
-import { LocalStorageAdapter } from '../services/storage/localStorage'
+import { SupabaseAdapter } from '../services/storage/supabase'
 
-const storageAdapter = new LocalStorageAdapter()
+const storageAdapter = new SupabaseAdapter()
 
 interface TaskStoreState {
   tasks: Task[]

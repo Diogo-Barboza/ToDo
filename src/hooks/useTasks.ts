@@ -1,16 +1,24 @@
 import { useEffect } from 'react'
-import { useUserStore } from '../stores/userStore'
+import { useAuth } from '../contexts/AuthContext'
 import { useTaskStore } from '../stores/taskStore'
 
 export function useTasks() {
-  const userId = useUserStore(state => state.userId)
+  const { user } = useAuth()
+  const userId = user?.id ?? ''
   const { tasks, isLoading, initialized, loadTasks, addTask, updateTask, deleteTask, reorderTasks, getTasksByDay } = useTaskStore()
 
   useEffect(() => {
-    if (!initialized) {
+    if (userId && !initialized) {
       loadTasks(userId)
     }
   }, [userId, initialized, loadTasks])
+
+  // Reset initialized when user changes (logout/login)
+  useEffect(() => {
+    if (!userId) {
+      useTaskStore.setState({ tasks: [], initialized: false, error: null })
+    }
+  }, [userId])
 
   return {
     tasks,
@@ -24,3 +32,4 @@ export function useTasks() {
     getTasksByDay: getTasksByDay
   }
 }
+
