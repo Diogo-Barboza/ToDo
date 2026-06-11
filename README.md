@@ -1,3 +1,3 @@
-# To-Do Kanban Semanal
+# To-Do Personal - Semanal
 
-Um aplicativo minimalista e fluido para gerenciar tarefas semanais em estilo Kanban, com drag-and-drop entre dias.
+Organizador de tarefas para a semana.
