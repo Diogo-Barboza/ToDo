@@ -1,0 +1,32 @@
+{
+  "name": "todo-pessoal-kanban",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "homepage": "https://diogo-barboza.github.io/todo-pessoal/",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview",
+    "deploy": "npm run build && gh-pages -d dist"
+  },
+  "dependencies": {
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "@dnd-kit/core": "^8.1.1",
+    "@dnd-kit/sortable": "^8.0.0",
+    "@dnd-kit/utilities": "^3.2.2",
+    "zustand": "^4.4.7",
+    "uuid": "^9.0.1"
+  },
+  "devDependencies": {
+    "@types/react": "^18.3.3",
+    "@types/react-dom": "^18.3.0",
+    "@types/node": "^20.11.0",
+    "@vitejs/plugin-react": "^4.3.0",
+    "typescript": "^5.3.3",
+    "vite": "^5.1.0",
+    "vite-plugin-gh-pages": "^0.2.1",
+    "gh-pages": "^6.1.1"
+  }
+}

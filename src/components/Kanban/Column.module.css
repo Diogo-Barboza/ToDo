@@ -1,0 +1,68 @@
+.column {
+  display: flex;
+  flex-direction: column;
+  background-color: var(--bg-tertiary);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-md);
+  min-height: 100%;
+  min-width: 280px;
+  max-width: 280px;
+  gap: var(--spacing-md);
+}
+
+.header {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+  padding-bottom: var(--spacing-md);
+  border-bottom: 2px solid var(--border-color);
+}
+
+.dayName {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.date {
+  font-size: 0.75rem;
+  color: var(--text-tertiary);
+}
+
+.tasks {
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  min-height: 0;
+
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: var(--border-color);
+    border-radius: 3px;
+  }
+
+  &::-webkit-scrollbar-thumb:hover {
+    background: var(--text-tertiary);
+  }
+}
+
+.addButton {
+  width: 100%;
+  margin-top: var(--spacing-sm);
+  color: var(--text-secondary);
+}
+
+.addButton:hover {
+  color: var(--accent);
+  background-color: var(--bg-secondary);
+}

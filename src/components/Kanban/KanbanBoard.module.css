@@ -1,0 +1,24 @@
+.board {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(280px, 1fr));
+  gap: var(--spacing-md);
+  padding: var(--spacing-lg);
+  height: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+
+.loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  color: var(--text-secondary);
+  font-size: 1rem;
+}
+
+@media (max-width: 1920px) {
+  .board {
+    grid-template-columns: repeat(7, 280px);
+  }
+}
