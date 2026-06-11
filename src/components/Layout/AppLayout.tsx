@@ -15,7 +15,9 @@ export function AppLayout({ children }: AppLayoutProps) {
   useEffect(() => {
     const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)')
     const handleChange = (e: MediaQueryListEvent) => {
-      setIsDarkMode(e.matches)
+      if (!localStorage.getItem('theme')) {
+        setIsDarkMode(e.matches)
+      }
     }
 
     mediaQuery.addEventListener('change', handleChange)
@@ -23,24 +25,34 @@ export function AppLayout({ children }: AppLayoutProps) {
   }, [])
 
   useEffect(() => {
-    localStorage.setItem('theme', isDarkMode ? 'dark' : 'light')
+    const root = document.documentElement
     if (isDarkMode) {
-      document.documentElement.style.colorScheme = 'dark'
+      root.classList.add('dark')
+      root.classList.remove('light')
+      root.style.colorScheme = 'dark'
     } else {
-      document.documentElement.style.colorScheme = 'light'
+      root.classList.add('light')
+      root.classList.remove('dark')
+      root.style.colorScheme = 'light'
     }
   }, [isDarkMode])
+
+  const toggleTheme = () => {
+    const nextMode = !isDarkMode
+    setIsDarkMode(nextMode)
+    localStorage.setItem('theme', nextMode ? 'dark' : 'light')
+  }
 
   return (
     <div className={styles.layout}>
       <header className={styles.header}>
         <div className={styles.content}>
-          <h1 className={styles.title}>📅 To-Do Kanban</h1>
+          <h1 className={styles.title}>To-Do Personal</h1>
           <button
             className={styles.themeToggle}
-            onClick={() => setIsDarkMode(!isDarkMode)}
-            aria-label="Toggle theme"
-            title={isDarkMode ? 'Modo claro' : 'Modo escuro'}
+            onClick={toggleTheme}
+            aria-label="Alternar tema"
+            title={isDarkMode ? 'Modo Claro' : 'Modo Escuro'}
           >
             {isDarkMode ? '☀️' : '🌙'}
           </button>

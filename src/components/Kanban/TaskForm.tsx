@@ -11,7 +11,7 @@ interface TaskFormProps {
   dayOfWeek: DayOfWeek
 }
 
-export function TaskForm({ isOpen, onClose, onSubmit, dayOfWeek }: TaskFormProps) {
+export function TaskForm({ isOpen, onClose, onSubmit }: TaskFormProps) {
   const [title, setTitle] = useState('')
   const [time, setTime] = useState('')
   const [description, setDescription] = useState('')

@@ -1,11 +1,48 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+}
+
+.toolbar {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  padding: var(--spacing-sm) var(--spacing-lg) 0;
+  gap: var(--spacing-md);
+}
+
+.toggleLabel {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  cursor: pointer;
+  user-select: none;
+}
+
+.toggleInput {
+  cursor: pointer;
+  accent-color: var(--accent);
+}
+
 .board {
   display: grid;
-  grid-template-columns: repeat(7, minmax(280px, 1fr));
   gap: var(--spacing-md);
   padding: var(--spacing-lg);
   height: 100%;
   overflow-x: auto;
   overflow-y: hidden;
+}
+
+.board.sevenCols {
+  grid-template-columns: repeat(7, 280px);
+}
+
+.board.fiveCols {
+  grid-template-columns: repeat(5, minmax(200px, 1fr));
 }
 
 .loading {
@@ -15,10 +52,4 @@
   height: 100%;
   color: var(--text-secondary);
   font-size: 1rem;
-}
-
-@media (max-width: 1920px) {
-  .board {
-    grid-template-columns: repeat(7, 280px);
-  }
 }

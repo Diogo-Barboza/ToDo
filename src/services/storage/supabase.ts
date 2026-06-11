@@ -2,27 +2,27 @@ import type { Task, TaskCreateInput, TaskUpdateInput } from '../../types/task'
 import type { IStorageAdapter } from './types'
 
 export class SupabaseAdapter implements IStorageAdapter {
-  async getTasks(userId: string): Promise<Task[]> {
+  async getTasks(_userId: string): Promise<Task[]> {
     throw new Error('SupabaseAdapter not yet implemented')
   }
 
-  async addTask(userId: string, input: TaskCreateInput): Promise<Task> {
+  async addTask(_userId: string, _input: TaskCreateInput): Promise<Task> {
     throw new Error('SupabaseAdapter not yet implemented')
   }
 
-  async updateTask(userId: string, taskId: string, input: TaskUpdateInput): Promise<Task> {
+  async updateTask(_userId: string, _taskId: string, _input: TaskUpdateInput): Promise<Task> {
     throw new Error('SupabaseAdapter not yet implemented')
   }
 
-  async deleteTask(userId: string, taskId: string): Promise<void> {
+  async deleteTask(_userId: string, _taskId: string): Promise<void> {
     throw new Error('SupabaseAdapter not yet implemented')
   }
 
-  async saveTasks(userId: string, tasks: Task[]): Promise<void> {
+  async saveTasks(_userId: string, _tasks: Task[]): Promise<void> {
     throw new Error('SupabaseAdapter not yet implemented')
   }
 
-  async clear(userId: string): Promise<void> {
+  async clear(_userId: string): Promise<void> {
     throw new Error('SupabaseAdapter not yet implemented')
   }
 }

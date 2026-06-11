@@ -1,5 +1,5 @@
 import { create } from 'zustand'
-import { subscribeWithSelector } from 'zustand/react'
+import { subscribeWithSelector } from 'zustand/middleware'
 import type { Task, TaskCreateInput, TaskUpdateInput, DayOfWeek } from '../types/task'
 import { LocalStorageAdapter } from '../services/storage/localStorage'
 
@@ -67,7 +67,7 @@ export const useTaskStore = create<TaskStoreState>()(
       }
     },
 
-    reorderTasks: async (userId: string, sourceId: string, destinationId: string, newDayOfWeek: DayOfWeek, newOrder: number) => {
+    reorderTasks: async (userId: string, sourceId: string, _destinationId: string, newDayOfWeek: DayOfWeek, newOrder: number) => {
       const state = get()
       const task = state.tasks.find(t => t.id === sourceId)
 
