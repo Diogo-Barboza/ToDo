@@ -9,9 +9,10 @@ interface TaskCardProps {
   task: Task
   onToggle: (taskId: string, completed: boolean) => void
   onDelete: (taskId: string) => void
+  onEditClick: (task: Task) => void
 }
 
-export function TaskCard({ task, onToggle, onDelete }: TaskCardProps) {
+export function TaskCard({ task, onToggle, onDelete, onEditClick }: TaskCardProps) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
     id: task.id
   })
@@ -28,6 +29,11 @@ export function TaskCard({ task, onToggle, onDelete }: TaskCardProps) {
     if (confirm('Deletar esta tarefa?')) {
       onDelete(task.id)
     }
+  }
+
+  const handleEdit = (e: React.MouseEvent) => {
+    e.stopPropagation()
+    onEditClick(task)
   }
 
   return (
@@ -62,14 +68,23 @@ export function TaskCard({ task, onToggle, onDelete }: TaskCardProps) {
             style={{ backgroundColor: PRIORITY_COLORS[task.priority] }}
             title={PRIORITY_LABELS[task.priority]}
           />
-          <button
-            ref={deleteButtonRef}
-            className={styles.deleteButton}
-            onClick={handleDelete}
-            aria-label="Deletar"
-          >
-            🗑️
-          </button>
+          <div className={styles.cardActions}>
+            <button
+              className={styles.editButton}
+              onClick={handleEdit}
+              aria-label="Editar"
+            >
+              ✏️
+            </button>
+            <button
+              ref={deleteButtonRef}
+              className={styles.deleteButton}
+              onClick={handleDelete}
+              aria-label="Deletar"
+            >
+              🗑️
+            </button>
+          </div>
         </div>
       </div>
     </div>

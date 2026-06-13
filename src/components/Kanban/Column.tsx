@@ -3,8 +3,9 @@ import { useDroppable } from '@dnd-kit/core'
 import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable'
 import { TaskCard } from './TaskCard'
 import { TaskForm } from './TaskForm'
+import { EditTaskForm } from './EditTaskForm'
 import { Button } from '../UI/Button'
-import type { Task, DayOfWeek } from '../../types/task'
+import type { Task, DayOfWeek, TaskUpdateInput } from '../../types/task'
 import { DAYS_OF_WEEK } from '../../utils/constants'
 import styles from './Column.module.css'
 
@@ -14,10 +15,12 @@ interface ColumnProps {
   onAddTask: (input: { title: string; time: string; description: string; priority: 'high' | 'medium' | 'low' }) => void
   onToggleTask: (taskId: string, completed: boolean) => void
   onDeleteTask: (taskId: string) => void
+  onEditTask: (taskId: string, input: TaskUpdateInput) => void
 }
 
-export function Column({ dayOfWeek, tasks, onAddTask, onToggleTask, onDeleteTask }: ColumnProps) {
+export function Column({ dayOfWeek, tasks, onAddTask, onToggleTask, onDeleteTask, onEditTask }: ColumnProps) {
   const [isFormOpen, setIsFormOpen] = useState(false)
+  const [editingTask, setEditingTask] = useState<Task | null>(null)
   const { setNodeRef } = useDroppable({ id: `column-${dayOfWeek}` })
 
   const handleAddTask = (input: { title: string; time: string; description: string; priority: 'high' | 'medium' | 'low' }) => {
@@ -26,8 +29,11 @@ export function Column({ dayOfWeek, tasks, onAddTask, onToggleTask, onDeleteTask
   }
 
   const today = new Date()
+  const jsToday = today.getDay() // 0=Sunday, 1=Monday, ... 6=Saturday
+  // Convert JS today to Monday-based (0=Monday..6=Sunday)
+  const todayMondayBased = jsToday === 0 ? 6 : jsToday - 1
   const taskDate = new Date(today)
-  taskDate.setDate(today.getDate() - today.getDay() + dayOfWeek + (dayOfWeek <= today.getDay() ? 0 : 0))
+  taskDate.setDate(today.getDate() - todayMondayBased + dayOfWeek)
   const dateStr = taskDate.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' })
 
   return (
@@ -45,6 +51,7 @@ export function Column({ dayOfWeek, tasks, onAddTask, onToggleTask, onDeleteTask
               task={task}
               onToggle={onToggleTask}
               onDelete={onDeleteTask}
+              onEditClick={(t) => setEditingTask(t)}
             />
           ))}
         </div>
@@ -65,6 +72,15 @@ export function Column({ dayOfWeek, tasks, onAddTask, onToggleTask, onDeleteTask
         onSubmit={handleAddTask}
         dayOfWeek={dayOfWeek}
       />
+
+      {editingTask && (
+        <EditTaskForm
+          isOpen={true}
+          onClose={() => setEditingTask(null)}
+          onSubmit={onEditTask}
+          task={editingTask}
+        />
+      )}
     </div>
   )
 }
