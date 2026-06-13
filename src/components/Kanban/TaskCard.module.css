@@ -3,7 +3,6 @@
   border: 1px solid var(--border-color);
   border-radius: var(--radius-md);
   padding: var(--spacing-md);
-  margin-bottom: var(--spacing-sm);
   cursor: grab;
   transition: var(--transition);
   touch-action: none;
@@ -102,6 +101,13 @@
   flex-shrink: 0;
 }
 
+.cardActions {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.editButton,
 .deleteButton {
   opacity: 0;
   width: 20px;
@@ -116,8 +122,14 @@
   flex-shrink: 0;
 }
 
+.card:hover .editButton,
 .card:hover .deleteButton {
   opacity: 1;
+}
+
+.editButton:hover {
+  background-color: rgba(59, 130, 246, 0.1);
+  color: var(--accent);
 }
 
 .deleteButton:hover {

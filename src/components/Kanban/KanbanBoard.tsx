@@ -98,6 +98,7 @@ export function KanbanBoard() {
               onAddTask={input => handleAddTask(dayOfWeek, input)}
               onToggleTask={(taskId, completed) => updateTask(taskId, { completed })}
               onDeleteTask={deleteTask}
+              onEditTask={(taskId, input) => updateTask(taskId, input)}
             />
           ))}
         </div>
