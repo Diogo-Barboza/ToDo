@@ -3,7 +3,7 @@ import react from '@vitejs/plugin-react'
 
 export default defineConfig({
   plugins: [react()],
-  base: '/ToDo/',
+  base: process.env.GITHUB_ACTIONS ? '/ToDo/' : '/',
   build: {
     outDir: 'dist',
     sourcemap: false,
