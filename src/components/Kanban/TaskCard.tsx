@@ -1,5 +1,6 @@
 import { useRef } from 'react'
 import { useSortable } from '@dnd-kit/sortable'
+import { useDraggable } from '@dnd-kit/core'
 import { CSS } from '@dnd-kit/utilities'
 import type { Task } from '../../types/task'
 import { PRIORITY_COLORS, PRIORITY_LABELS } from '../../utils/constants'
@@ -10,18 +11,22 @@ interface TaskCardProps {
   onToggle: (taskId: string, completed: boolean) => void
   onDelete: (taskId: string) => void
   onEditClick: (task: Task) => void
+  isOverlay?: boolean
 }
 
-export function TaskCard({ task, onToggle, onDelete, onEditClick }: TaskCardProps) {
+export function TaskCard({ task, onToggle, onDelete, onEditClick, isOverlay = false }: TaskCardProps) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
-    id: task.id
+    id: task.id,
+    data: { task }
   })
+
   const deleteButtonRef = useRef<HTMLButtonElement>(null)
 
   const style = {
-    transform: CSS.Transform.toString(transform),
-    transition,
-    opacity: isDragging ? 0.5 : 1
+    transform: isOverlay ? undefined : CSS.Transform.toString(transform),
+    transition: isOverlay ? undefined : (!transform || 'transform 200ms ease'),
+    opacity: isDragging ? 0.3 : 1,
+    cursor: isDragging ? 'grabbing' : 'grab'
   }
 
   const handleDelete = (e: React.MouseEvent) => {
@@ -50,6 +55,7 @@ export function TaskCard({ task, onToggle, onDelete, onEditClick }: TaskCardProp
           checked={task.completed}
           onChange={e => onToggle(task.id, e.target.checked)}
           className={styles.checkbox}
+          onPointerDown={e => e.stopPropagation()}
           onClick={e => e.stopPropagation()}
         />
 
@@ -72,6 +78,7 @@ export function TaskCard({ task, onToggle, onDelete, onEditClick }: TaskCardProp
             <button
               className={styles.editButton}
               onClick={handleEdit}
+              onPointerDown={e => e.stopPropagation()}
               aria-label="Editar"
             >
               ✏️
@@ -80,6 +87,7 @@ export function TaskCard({ task, onToggle, onDelete, onEditClick }: TaskCardProp
               ref={deleteButtonRef}
               className={styles.deleteButton}
               onClick={handleDelete}
+              onPointerDown={e => e.stopPropagation()}
               aria-label="Deletar"
             >
               🗑️

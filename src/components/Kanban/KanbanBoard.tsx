@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
-import { DndContext, DragEndEvent, closestCenter, PointerSensor, useSensor, useSensors } from '@dnd-kit/core'
+import { DndContext, DragEndEvent, closestCenter, PointerSensor, useSensor, useSensors, DragOverlay, DragStartEvent } from '@dnd-kit/core'
+import { TaskCard } from './TaskCard'
 import { Column } from './Column'
 import { useTasks } from '../../hooks/useTasks'
 import type { TaskCreateInput } from '../../types/task'
@@ -7,6 +8,7 @@ import styles from './KanbanBoard.module.css'
 
 export function KanbanBoard() {
   const {
+    tasks,
     isLoading,
     initialized,
     addTask,
@@ -15,6 +17,8 @@ export function KanbanBoard() {
     reorderTasks,
     getTasksByDay
   } = useTasks()
+
+  const [activeTaskId, setActiveTaskId] = useState<string | null>(null)
 
   const [showWeekend, setShowWeekend] = useState(() => {
     const saved = localStorage.getItem('show-weekend')
@@ -27,10 +31,8 @@ export function KanbanBoard() {
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
-      distance: 8,
       activationConstraint: {
-        delay: 100,
-        tolerance: 5
+        distance: 5,
       }
     })
   )
@@ -42,8 +44,13 @@ export function KanbanBoard() {
     })
   }
 
+  const handleDragStart = (event: DragStartEvent) => {
+    setActiveTaskId(String(event.active.id))
+  }
+
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event
+    setActiveTaskId(null)
 
     if (!over) return
 
@@ -70,6 +77,8 @@ export function KanbanBoard() {
 
   const daysToShow = showWeekend ? [0, 1, 2, 3, 4, 5, 6] : [0, 1, 2, 3, 4]
 
+  const activeTask = tasks.find(task => task.id === activeTaskId)
+
   return (
     <div className={styles.container}>
       <div className={styles.toolbar}>
@@ -87,6 +96,7 @@ export function KanbanBoard() {
       <DndContext
         sensors={sensors}
         collisionDetection={closestCenter}
+        onDragStart={handleDragStart}
         onDragEnd={handleDragEnd}
       >
         <div className={`${styles.board} ${showWeekend ? styles.sevenCols : styles.fiveCols}`}>
@@ -102,6 +112,20 @@ export function KanbanBoard() {
             />
           ))}
         </div>
+
+        <DragOverlay>
+          {activeTask ? (
+            <div style={{ cursor: 'grabbing', transform: 'rotate(2deg)', boxShadow: 'var(--shadow-lg)' }}>
+              <TaskCard
+                task={activeTask}
+                onToggle={() => {}}
+                onDelete={() => {}}
+                onEditClick={() => {}}
+                isOverlay={true}
+              />
+            </div>
+          ) : null}
+        </DragOverlay>
       </DndContext>
     </div>
   )
