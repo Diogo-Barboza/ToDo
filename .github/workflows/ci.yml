@@ -3,9 +3,9 @@ name: CI - Build & Deploy
 on:
   push:
     # O build roda automaticamente sempre que você subir código em qualquer uma das duas
-    branches: [ main, dev ]
+    branches: [main, dev]
   pull_request:
-    branches: [ main, dev ]
+    branches: [main, dev]
 
 jobs:
   # JOB 1: Testar se o projeto builda (Roda para main e dev)
@@ -26,6 +26,9 @@ jobs:
 
       - name: Run Build
         run: npm run build
+        env:
+          VITE_SUPABASE_URL: ${{ vars.VITE_SUPABASE_URL }}
+          VITE_SUPABASE_ANON_KEY: ${{ vars.VITE_SUPABASE_ANON_KEY }}
 
   # JOB 2: Deploy no GitHub Pages (SÓ RODA SE FOR NA BRANCH MAIN e se o JOB 1 passar)
   deploy-production:
@@ -60,3 +63,5 @@ jobs:
           npm run deploy
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          VITE_SUPABASE_URL: ${{ vars.VITE_SUPABASE_URL }}
+          VITE_SUPABASE_ANON_KEY: ${{ vars.VITE_SUPABASE_ANON_KEY }}
