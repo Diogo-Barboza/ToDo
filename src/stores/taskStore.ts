@@ -15,7 +15,13 @@ interface TaskStoreState {
   addTask: (userId: string, input: TaskCreateInput) => Promise<void>
   updateTask: (userId: string, taskId: string, input: TaskUpdateInput) => Promise<void>
   deleteTask: (userId: string, taskId: string) => Promise<void>
-  reorderTasks: (userId: string, sourceId: string, destinationId: string, newDayOfWeek: DayOfWeek, newOrder: number) => Promise<void>
+  reorderTasks: (
+    userId: string,
+    sourceId: string,
+    destinationId: string,
+    newDayOfWeek: DayOfWeek,
+    newOrder: number
+  ) => Promise<void>
   getTasksByDay: (dayOfWeek: DayOfWeek) => Task[]
 }
 
@@ -51,7 +57,7 @@ export const useTaskStore = create<TaskStoreState>()(
       try {
         const updated = await storageAdapter.updateTask(userId, taskId, input)
         set(state => ({
-          tasks: state.tasks.map(t => t.id === taskId ? updated : t)
+          tasks: state.tasks.map(t => (t.id === taskId ? updated : t))
         }))
       } catch (err) {
         set({ error: err instanceof Error ? err.message : 'Unknown error' })
@@ -67,7 +73,13 @@ export const useTaskStore = create<TaskStoreState>()(
       }
     },
 
-    reorderTasks: async (userId: string, sourceId: string, _destinationId: string, newDayOfWeek: DayOfWeek, newOrder: number) => {
+    reorderTasks: async (
+      userId: string,
+      sourceId: string,
+      _destinationId: string,
+      newDayOfWeek: DayOfWeek,
+      newOrder: number
+    ) => {
       const state = get()
       const task = state.tasks.find(t => t.id === sourceId)
 
@@ -81,10 +93,18 @@ export const useTaskStore = create<TaskStoreState>()(
       tasksInDay.splice(newOrder, 0, { ...task, dayOfWeek: newDayOfWeek })
 
       const reorderedTasks = tasksInDay.map((t, idx) => ({ ...t, order: idx }))
-      const allTasks = [...updatedTasks.filter(t => t.dayOfWeek !== newDayOfWeek), ...reorderedTasks]
+      const allTasks = [
+        ...updatedTasks.filter(t => t.dayOfWeek !== newDayOfWeek),
+        ...reorderedTasks
+      ]
 
-      await storageAdapter.saveTasks(userId, allTasks)
       set({ tasks: allTasks })
+
+      try {
+        await storageAdapter.saveTasks(userId, allTasks)
+      } catch (err) {
+        console.error('Falha ao salvar a reordenação das tasks', err)
+      }
     },
 
     getTasksByDay: (dayOfWeek: DayOfWeek) => {

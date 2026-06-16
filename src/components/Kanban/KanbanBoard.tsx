@@ -1,10 +1,22 @@
 import { useState, useEffect } from 'react'
-import { DndContext, DragEndEvent, closestCenter, PointerSensor, useSensor, useSensors, DragOverlay, DragStartEvent } from '@dnd-kit/core'
+import {
+  DndContext,
+  DragEndEvent,
+  closestCenter,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  DragOverlay,
+  DragStartEvent,
+  defaultDropAnimationSideEffects,
+  DropAnimation
+} from '@dnd-kit/core'
 import { TaskCard } from './TaskCard'
 import { Column } from './Column'
 import { useTasks } from '../../hooks/useTasks'
 import type { TaskCreateInput } from '../../types/task'
 import styles from './KanbanBoard.module.css'
+import { CustomAuthError } from '@supabase/supabase-js'
 
 export function KanbanBoard() {
   const {
@@ -20,6 +32,16 @@ export function KanbanBoard() {
 
   const [activeTaskId, setActiveTaskId] = useState<string | null>(null)
 
+  const customDropAnimation: DropAnimation = {
+    sideEffects: defaultDropAnimationSideEffects({
+      styles: {
+        active: {
+          opacity: '1'
+        }
+      }
+    })
+  }
+
   const [showWeekend, setShowWeekend] = useState(() => {
     const saved = localStorage.getItem('show-weekend')
     return saved === null ? true : saved === 'true'
@@ -32,7 +54,7 @@ export function KanbanBoard() {
   const sensors = useSensors(
     useSensor(PointerSensor, {
       activationConstraint: {
-        distance: 5,
+        distance: 5
       }
     })
   )
@@ -113,9 +135,15 @@ export function KanbanBoard() {
           ))}
         </div>
 
-        <DragOverlay>
+        <DragOverlay dropAnimation={customDropAnimation}>
           {activeTask ? (
-            <div style={{ cursor: 'grabbing', transform: 'rotate(2deg)', boxShadow: 'var(--shadow-lg)' }}>
+            <div
+              style={{
+                cursor: 'grabbing',
+                transform: 'rotate(2deg)',
+                boxShadow: 'var(--shadow-lg)'
+              }}
+            >
               <TaskCard
                 task={activeTask}
                 onToggle={() => {}}
