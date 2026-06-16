@@ -4,3 +4,7 @@ dist
 *.local
 .env
 .env.local
+ARCHITECTURE.md
+DEPLOYMENT.md
+GETTING_STARTED.md
+SUPABASE_MIGRATION.md
