@@ -16,7 +16,6 @@ import { Column } from './Column'
 import { useTasks } from '../../hooks/useTasks'
 import type { TaskCreateInput } from '../../types/task'
 import styles from './KanbanBoard.module.css'
-import { CustomAuthError } from '@supabase/supabase-js'
 
 export function KanbanBoard() {
   const {
