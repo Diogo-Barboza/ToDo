@@ -1,6 +1,5 @@
 import { useRef } from 'react'
 import { useSortable } from '@dnd-kit/sortable'
-import { useDraggable } from '@dnd-kit/core'
 import { CSS } from '@dnd-kit/utilities'
 import type { Task } from '../../types/task'
 import { PRIORITY_COLORS, PRIORITY_LABELS } from '../../utils/constants'
@@ -24,7 +23,7 @@ export function TaskCard({ task, onToggle, onDelete, onEditClick, isOverlay = fa
 
   const style = {
     transform: isOverlay ? undefined : CSS.Transform.toString(transform),
-    transition: isOverlay ? undefined : (!transform || 'transform 200ms ease'),
+    transition: isOverlay ? undefined : (transition ?? 'transform 200ms ease'),
     opacity: isDragging ? 0.3 : 1,
     cursor: isDragging ? 'grabbing' : 'grab'
   }
