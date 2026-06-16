@@ -32,6 +32,10 @@ jobs:
     needs: verify-build # Garante que só vai para produção se o build passou com sucesso
     if: github.ref == 'refs/heads/main' && github.event_name == 'push' # Regra mágica: só roda no push da main
     runs-on: ubuntu-latest
+
+    permissions:
+      contents: write # Permissão para escrever no repositório (necessário para o deploy)
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -47,7 +51,12 @@ jobs:
 
       # Executa o seu script de deploy que já está no seu package.json!
       - name: Deploy to GitHub Pages
-        run: npm run deploy 
+        run: |
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git config --global user.name "github-actions[bot]"
+
+          git remote set-url origin "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git"
+
+          npm run deploy
         env:
-          # Se o seu deploy do gh-pages precisar de permissão de escrita, o próprio token do GitHub resolve
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
