@@ -1,0 +1,53 @@
+name: CI - Build & Deploy
+
+on:
+  push:
+    # O build roda automaticamente sempre que você subir código em qualquer uma das duas
+    branches: [ main, dev ]
+  pull_request:
+    branches: [ main, dev ]
+
+jobs:
+  # JOB 1: Testar se o projeto builda (Roda para main e dev)
+  verify-build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run Build
+        run: npm run build
+
+  # JOB 2: Deploy no GitHub Pages (SÓ RODA SE FOR NA BRANCH MAIN e se o JOB 1 passar)
+  deploy-production:
+    needs: verify-build # Garante que só vai para produção se o build passou com sucesso
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push' # Regra mágica: só roda no push da main
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      # Executa o seu script de deploy que já está no seu package.json!
+      - name: Deploy to GitHub Pages
+        run: npm run deploy 
+        env:
+          # Se o seu deploy do gh-pages precisar de permissão de escrita, o próprio token do GitHub resolve
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
