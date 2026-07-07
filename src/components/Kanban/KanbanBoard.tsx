@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import {
   DndContext,
   DragEndEvent,
-  closestCenter,
+  pointerWithin,
   PointerSensor,
   useSensor,
   useSensors,
@@ -26,7 +26,8 @@ export function KanbanBoard() {
     updateTask,
     deleteTask,
     reorderTasks,
-    getTasksByDay
+    getTasksByDay,
+    finishWeek
   } = useTasks()
 
   const [activeTaskId, setActiveTaskId] = useState<string | null>(null)
@@ -58,6 +59,24 @@ export function KanbanBoard() {
     })
   )
 
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const now = new Date()
+      // Sunday is 0, 23 hours, 50 minutes
+      if (now.getDay() === 0 && now.getHours() === 23 && now.getMinutes() === 50) {
+        const lastReset = localStorage.getItem('lastWeeklyReset')
+        const todayStr = now.toISOString().split('T')[0] // 'YYYY-MM-DD'
+        
+        if (lastReset !== todayStr) {
+          finishWeek()
+          localStorage.setItem('lastWeeklyReset', todayStr)
+        }
+      }
+    }, 30000) // Check every 30 seconds
+
+    return () => clearInterval(interval)
+  }, [finishWeek])
+
   const handleAddTask = (dayOfWeek: number, input: Omit<TaskCreateInput, 'dayOfWeek'>) => {
     addTask({
       ...input,
@@ -78,12 +97,24 @@ export function KanbanBoard() {
     const sourceTaskId = String(active.id)
     const destinationId = String(over.id)
 
-    const match = destinationId.match(/column-(\d+)/)
-    if (!match) return
+    const columnMatch = destinationId.match(/column-(\d+)/)
+    
+    let newDayOfWeek: 0 | 1 | 2 | 3 | 4 | 5 | 6
+    let newOrder = 0
 
-    const newDayOfWeek = parseInt(match[1], 10) as 0 | 1 | 2 | 3 | 4 | 5 | 6
-    const tasksInDay = getTasksByDay(newDayOfWeek)
-    const newOrder = tasksInDay.length
+    if (columnMatch) {
+      newDayOfWeek = parseInt(columnMatch[1], 10) as 0 | 1 | 2 | 3 | 4 | 5 | 6
+      const tasksInDay = getTasksByDay(newDayOfWeek).filter(t => t.id !== sourceTaskId)
+      newOrder = tasksInDay.length
+    } else {
+      const targetTask = tasks.find(t => t.id === destinationId)
+      if (!targetTask) return
+      
+      newDayOfWeek = targetTask.dayOfWeek
+      const tasksInNewDay = getTasksByDay(newDayOfWeek)
+      const targetIndex = tasksInNewDay.findIndex(t => t.id === destinationId)
+      newOrder = targetIndex
+    }
 
     reorderTasks(sourceTaskId, destinationId, newDayOfWeek, newOrder)
   }
@@ -116,7 +147,7 @@ export function KanbanBoard() {
 
       <DndContext
         sensors={sensors}
-        collisionDetection={closestCenter}
+        collisionDetection={pointerWithin}
         onDragStart={handleDragStart}
         onDragEnd={handleDragEnd}
       >

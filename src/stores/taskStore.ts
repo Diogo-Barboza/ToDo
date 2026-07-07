@@ -22,6 +22,7 @@ interface TaskStoreState {
     newDayOfWeek: DayOfWeek,
     newOrder: number
   ) => Promise<void>
+  finishWeek: (userId: string) => Promise<void>
   getTasksByDay: (dayOfWeek: DayOfWeek) => Task[]
 }
 
@@ -104,6 +105,27 @@ export const useTaskStore = create<TaskStoreState>()(
         await storageAdapter.saveTasks(userId, allTasks)
       } catch (err) {
         console.error('Falha ao salvar a reordenação das tasks', err)
+      }
+    },
+
+    finishWeek: async (userId: string) => {
+      const state = get()
+      
+      const remainingTasks = state.tasks
+        .filter(t => !t.completed)
+        .map(t => ({ ...t, dayOfWeek: 1 as DayOfWeek }))
+
+      // Reorder them so they appear sequentially on Monday
+      const reorderedRemaining = remainingTasks.map((t, idx) => ({ ...t, order: idx }))
+
+      set({ tasks: reorderedRemaining })
+
+      try {
+        await storageAdapter.saveTasks(userId, reorderedRemaining)
+      } catch (err) {
+        set({ error: err instanceof Error ? err.message : 'Unknown error' })
+        // If it fails, maybe revert or reload tasks? Let's just log or set error for now.
+        console.error('Falha ao finalizar semana', err)
       }
     },
 
